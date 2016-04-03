@@ -43,6 +43,7 @@ class MenuScene: SKScene {
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         
         for touch in touches {
+            
             let pos = touch.locationInNode(self)
             let node = self.nodeAtPoint(pos)
                 
@@ -53,6 +54,15 @@ class MenuScene: SKScene {
                     view.presentScene(scene)
                 }
             }
+            
+            if node == leaderboardsButton {
+                if let view = view {
+                    let scene = LeaderboardScene(fileNamed: "LeaderboardScene")
+                    scene!.scaleMode = SKSceneScaleMode.AspectFill
+                    view.presentScene(scene)
+                }
+            }
+            
         }
     }
     
