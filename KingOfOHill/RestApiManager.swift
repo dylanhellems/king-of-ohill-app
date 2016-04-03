@@ -5,6 +5,7 @@
 //  Created by Dylan Hellems on 4/2/16.
 //  Copyright © 2016 Dylan Hellems. All rights reserved.
 //
+//  Based off tutorial at https://grokswift.com/simple-rest-with-swift/
 
 import Foundation
 
@@ -13,7 +14,7 @@ class RestApiManager: NSObject {
     var urlBase : String = "https://king-of-ohill-web.herokuapp.com/"
     var request : NSURLRequest = NSURLRequest()
     
-    func get_leaderboards() {
+    func get_leaderboards(callback: (Dictionary<String, AnyObject>) -> ()) {
         
         let endpoint = urlBase + "get_leaderboards/"
         
@@ -49,6 +50,8 @@ class RestApiManager: NSObject {
                 print("error trying to convert data to JSON")
                 return
             }
+            
+            callback(post as! Dictionary)
             
             // now we have the post, let's just print it to prove we can access it
             print("The post is: " + post.description)

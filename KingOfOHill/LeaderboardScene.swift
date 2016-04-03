@@ -10,7 +10,10 @@ import SpriteKit
 
 class LeaderboardScene: SKScene {
     
+    var data = ""
+    
     var titleLabel = SKLabelNode()
+    var dataLabel = SKLabelNode()
     
     var menuButton = SKSpriteNode()
     let menuButtonTex = SKTexture(imageNamed: "Menu")
@@ -23,15 +26,28 @@ class LeaderboardScene: SKScene {
         titleLabel.text = "Leaderboards"
         titleLabel.fontSize = 32
         titleLabel.fontColor = UIColor.blackColor()
-        titleLabel.position = CGPointMake(frame.midX, frame.midY + frame.maxY/4)
+        titleLabel.position = CGPointMake(frame.midX, frame.midY + frame.maxY/3)
         self.addChild(titleLabel)
         
-        menuButton = SKSpriteNode(texture: menuButtonTex)
-        menuButton.position = CGPointMake(frame.midX, frame.midY)
-        self.addChild(menuButton)
         
         let rest = RestApiManager()
-        rest.get_leaderboards()
+        rest.get_leaderboards() { (response) in
+            let leaderboards = response["leaderboards"] as! Dictionary<String, AnyObject>
+            let ohill = leaderboards["OHill"] as! Dictionary<String, AnyObject>
+            let breakfast = ohill["Breakfast"]
+            
+            let multiLabel = SKMultilineLabel(text: (breakfast as? String)! , labelWidth: 250, pos: CGPointMake(self.frame.midX, self.frame.midY + self.frame.maxY/3))
+            multiLabel.fontName = "SanFranciscoDisplay-Black"
+            multiLabel.fontColor = UIColor.blackColor()
+            multiLabel.fontSize = 24
+            self.addChild(multiLabel)
+        }
+        
+        menuButton = SKSpriteNode(texture: menuButtonTex)
+        let menuButtonSize = menuButton.size
+        let screenSize = UIScreen.mainScreen().bounds.size
+        menuButton.position = CGPointMake(frame.midX - screenSize.width/2 + menuButtonSize.width/2, frame.minY + menuButtonSize.height/2)
+        self.addChild(menuButton)
         
     }
     
