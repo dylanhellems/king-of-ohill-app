@@ -16,6 +16,8 @@
 		162D83221CB0905600D61913 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 162D83201CB0905600D61913 /* LaunchScreen.storyboard */; };
 		162D832D1CB0905600D61913 /* KingOfOHillTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162D832C1CB0905600D61913 /* KingOfOHillTests.swift */; };
 		162D83381CB0905600D61913 /* KingOfOHillUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162D83371CB0905600D61913 /* KingOfOHillUITests.swift */; };
+		162D83461CB092C000D61913 /* MenuScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 162D83451CB092C000D61913 /* MenuScene.sks */; };
+		162D83481CB0930200D61913 /* MenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162D83471CB0930200D61913 /* MenuScene.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +53,8 @@
 		162D83331CB0905600D61913 /* KingOfOHillUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KingOfOHillUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		162D83371CB0905600D61913 /* KingOfOHillUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KingOfOHillUITests.swift; sourceTree = "<group>"; };
 		162D83391CB0905600D61913 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		162D83451CB092C000D61913 /* MenuScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = MenuScene.sks; sourceTree = "<group>"; };
+		162D83471CB0930200D61913 /* MenuScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuScene.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +113,8 @@
 				162D831E1CB0905600D61913 /* Assets.xcassets */,
 				162D83201CB0905600D61913 /* LaunchScreen.storyboard */,
 				162D83231CB0905600D61913 /* Info.plist */,
+				162D83451CB092C000D61913 /* MenuScene.sks */,
+				162D83471CB0930200D61913 /* MenuScene.swift */,
 			);
 			path = KingOfOHill;
 			sourceTree = "<group>";
@@ -241,6 +247,7 @@
 				162D83161CB0905600D61913 /* GameScene.sks in Resources */,
 				162D83221CB0905600D61913 /* LaunchScreen.storyboard in Resources */,
 				162D831F1CB0905600D61913 /* Assets.xcassets in Resources */,
+				162D83461CB092C000D61913 /* MenuScene.sks in Resources */,
 				162D831D1CB0905600D61913 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -267,6 +274,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				162D83181CB0905600D61913 /* GameScene.swift in Sources */,
+				162D83481CB0930200D61913 /* MenuScene.swift in Sources */,
 				162D831A1CB0905600D61913 /* GameViewController.swift in Sources */,
 				162D83141CB0905600D61913 /* AppDelegate.swift in Sources */,
 			);
@@ -497,6 +505,7 @@
 				162D833E1CB0905600D61913 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		162D833F1CB0905600D61913 /* Build configuration list for PBXNativeTarget "KingOfOHillTests" */ = {
 			isa = XCConfigurationList;
@@ -505,6 +514,7 @@
 				162D83411CB0905600D61913 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		162D83421CB0905600D61913 /* Build configuration list for PBXNativeTarget "KingOfOHillUITests" */ = {
 			isa = XCConfigurationList;
@@ -513,6 +523,7 @@
 				162D83441CB0905600D61913 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
