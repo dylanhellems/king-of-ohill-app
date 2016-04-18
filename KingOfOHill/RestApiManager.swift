@@ -70,4 +70,70 @@ class RestApiManager: NSObject {
         task.resume()
         
     }
+    
+    func add_nickname(nickname: String, callback: (Dictionary<String, AnyObject>) -> ()) {
+        
+        let endpoint = urlBase + "add_nickname/"
+        
+        guard let url = NSURL(string: endpoint) else {
+            print("Error: cannot create URL")
+            return
+        }
+        let request = NSMutableURLRequest(URL: url)
+        request.HTTPMethod = "POST"
+        
+        let scapedKey = ("name").stringByAddingPercentEncodingWithAllowedCharacters(
+            .URLHostAllowedCharacterSet())!
+        let scapedValue = (nickname).stringByAddingPercentEncodingWithAllowedCharacters(
+            .URLHostAllowedCharacterSet())!
+        let bodyData = "\(scapedKey)=\(scapedValue)&"
+    
+        request.HTTPBody = bodyData.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
+
+        
+        let config = NSURLSessionConfiguration.defaultSessionConfiguration()
+        let session = NSURLSession(configuration: config)
+        
+        let task = session.dataTaskWithRequest(request, completionHandler: { (data, response, error) in
+            
+            guard let responseData = data else {
+                print("Error: did not receive data")
+                return
+            }
+            
+            guard error == nil else {
+                print("error calling POST on /add_nickname/")
+                print(error)
+                return
+            }
+            
+            // parse the result as JSON, since that's what the API provides
+            let post: NSDictionary
+            
+            do {
+                post = try NSJSONSerialization.JSONObjectWithData(responseData,
+                    options: []) as! NSDictionary
+            } catch  {
+                print("error trying to convert data to JSON")
+                return
+            }
+            
+            callback(post as! Dictionary)
+            
+            // now we have the post, let's just print it to prove we can access it
+            print("The post is: " + post.description)
+            
+            // the post object is a dictionary
+            if let postResult = post["result"] as? String {
+                print("The result is: " + postResult)
+            }
+            
+            if let postMessage = post["message"] as? String {
+                print("The message is: " + postMessage)
+            }
+            
+        })
+        
+        task.resume()
+    }
 }

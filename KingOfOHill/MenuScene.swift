@@ -18,7 +18,10 @@ class MenuScene: SKScene {
     var leaderboardsButton = SKSpriteNode()
     let leaderboardsButtonTex = SKTexture(imageNamed: "Leaderboards")
     
+    let alert = UIAlertController(title: "New User", message: "Choose a nickname:", preferredStyle: .Alert)
+    
     override func didMoveToView(view: SKView) {
+        super.didMoveToView(view)
         
         self.backgroundColor = UIColor.orangeColor()
         
@@ -42,16 +45,22 @@ class MenuScene: SKScene {
         
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         
+        let defaults = NSUserDefaults.standardUserDefaults()
+        
         for touch in touches {
             
             let pos = touch.locationInNode(self)
             let node = self.nodeAtPoint(pos)
                 
             if node == playButton {
-                if let view = view {
-                    let scene = GameScene(fileNamed: "GameScene")
-                    scene!.scaleMode = SKSceneScaleMode.AspectFill
-                    view.presentScene(scene)
+                if defaults.stringForKey(nicknameKeys.id) != nil && defaults.stringForKey(nicknameKeys.name) != nil {
+                    if let view = view {
+                        let scene = GameScene(fileNamed: "GameScene")
+                        scene!.scaleMode = SKSceneScaleMode.AspectFill
+                        view.presentScene(scene)
+                    }
+                } else {
+                    setNickname()
                 }
             }
             
@@ -64,6 +73,39 @@ class MenuScene: SKScene {
             }
             
         }
+    }
+    
+    struct nicknameKeys {
+        static let id = "id"
+        static let name = "name"
+    }
+    
+    func setNickname() {
+        alert.addTextFieldWithConfigurationHandler({ (textField) -> Void in
+            textField.text = ""
+        })
+        
+        alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: { (action) -> Void in
+            let textField = self.alert.textFields![0] as UITextField
+            print("Text field: \(textField.text)")
+            
+            let nickname = textField.text!
+            
+            let rest = RestApiManager()
+            rest.add_nickname(nickname, callback: {(response) in
+                let id = response["message"] as! NSInteger
+                
+                let defaults = NSUserDefaults.standardUserDefaults()
+                
+                defaults.setValue(id, forKey: nicknameKeys.id)
+                defaults.setValue(nickname, forKey: nicknameKeys.name)
+                
+                defaults.synchronize()
+            })
+            
+        }))
+        
+        self.view?.window?.rootViewController?.presentViewController(alert, animated: true, completion: nil)
     }
     
 }
