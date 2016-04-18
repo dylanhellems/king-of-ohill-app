@@ -11,6 +11,8 @@ let multiLabel = SKMultilineLabel(text: "Lorem ipsum dolor sit amet, consectetur
 self.addChild(multiLabel)
 */
 
+// Found here: https://gist.github.com/craiggrummitt/03bfa93c07e247ee9358
+
 import SpriteKit
 
 class SKMultilineLabel: SKNode {
