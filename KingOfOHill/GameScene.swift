@@ -10,6 +10,9 @@ import SpriteKit
 
 class GameScene: SKScene {
     
+    var menuButton = SKSpriteNode()
+    let menuButtonTex = SKTexture(imageNamed: "Menu")
+    
     override func didMoveToView(view: SKView) {
         
         /* Setup your scene here */
@@ -20,25 +23,44 @@ class GameScene: SKScene {
         
         self.addChild(myLabel)
         
+        menuButton = SKSpriteNode(texture: menuButtonTex)
+        let menuButtonSize = menuButton.size
+        let screenSize = UIScreen.mainScreen().bounds.size
+        menuButton.position = CGPointMake(frame.midX - screenSize.width/2 + menuButtonSize.width/2, frame.minY + menuButtonSize.height/2)
+        self.addChild(menuButton)
+        
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
        
         /* Called when a touch begins */
         for touch in touches {
-            let location = touch.locationInNode(self)
             
-            let sprite = SKSpriteNode(imageNamed:"Spaceship")
+            let pos = touch.locationInNode(self)
+            let node = self.nodeAtPoint(pos)
             
-            sprite.xScale = 0.5
-            sprite.yScale = 0.5
-            sprite.position = location
+            if node == menuButton {
+                if let view = view {
+                    let scene = MenuScene(fileNamed: "MenuScene")
+                    scene!.scaleMode = SKSceneScaleMode.AspectFill
+                    view.presentScene(scene)
+                }
+            } else {
+
+                let location = touch.locationInNode(self)
+                
+                let sprite = SKSpriteNode(imageNamed:"Spaceship")
             
-            let action = SKAction.rotateByAngle(CGFloat(M_PI), duration:1)
+                sprite.xScale = 0.5
+                sprite.yScale = 0.5
+                sprite.position = location
             
-            sprite.runAction(SKAction.repeatActionForever(action))
+                let action = SKAction.rotateByAngle(CGFloat(M_PI), duration:1)
             
-            self.addChild(sprite)
+                sprite.runAction(SKAction.repeatActionForever(action))
+            
+                self.addChild(sprite)
+            }
             
         }
     }
