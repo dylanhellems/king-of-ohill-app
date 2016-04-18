@@ -15,8 +15,12 @@ class RestApiManager: NSObject {
     var request : NSURLRequest = NSURLRequest()
     
     func get_leaderboards(callback: (Dictionary<String, AnyObject>) -> ()) {
-        
         let endpoint = urlBase + "get_leaderboards/"
+        
+        get(endpoint, callback: callback)
+    }
+    
+    func get(endpoint: String, callback: (Dictionary<String, AnyObject>) -> ()) {
         
         guard let url = NSURL(string: endpoint) else {
             print("Error: cannot create URL")
@@ -35,7 +39,7 @@ class RestApiManager: NSObject {
             }
             
             guard error == nil else {
-                print("error calling GET on /get_leaderboards/")
+                print("error calling GET on /\(endpoint)")
                 print(error)
                 return
             }
@@ -72,8 +76,18 @@ class RestApiManager: NSObject {
     }
     
     func add_nickname(nickname: String, callback: (Dictionary<String, AnyObject>) -> ()) {
-        
         let endpoint = urlBase + "add_nickname/"
+        
+        post(endpoint, params: [("name", nickname)], callback: callback)
+    }
+    
+    func validate_nickname(nickname: String, id: String, callback: (Dictionary<String, AnyObject>) -> ()) {
+        let endpoint = urlBase + "validate_nickname/"
+        
+        post(endpoint, params: [("name", nickname), ("id", id)], callback: callback)
+    }
+    
+    func post(endpoint: String, params: [(String, String)], callback: (Dictionary<String, AnyObject>) -> ()) {
         
         guard let url = NSURL(string: endpoint) else {
             print("Error: cannot create URL")
@@ -82,11 +96,14 @@ class RestApiManager: NSObject {
         let request = NSMutableURLRequest(URL: url)
         request.HTTPMethod = "POST"
         
-        let scapedKey = ("name").stringByAddingPercentEncodingWithAllowedCharacters(
-            .URLHostAllowedCharacterSet())!
-        let scapedValue = (nickname).stringByAddingPercentEncodingWithAllowedCharacters(
-            .URLHostAllowedCharacterSet())!
-        let bodyData = "\(scapedKey)=\(scapedValue)&"
+        var bodyData = ""
+        for (key, value) in params {
+            let scapedKey = key.stringByAddingPercentEncodingWithAllowedCharacters(
+                .URLHostAllowedCharacterSet())!
+            let scapedValue = value.stringByAddingPercentEncodingWithAllowedCharacters(
+                .URLHostAllowedCharacterSet())!
+            bodyData += "\(scapedKey)=\(scapedValue)&"
+        }
     
         request.HTTPBody = bodyData.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
 
@@ -102,7 +119,7 @@ class RestApiManager: NSObject {
             }
             
             guard error == nil else {
-                print("error calling POST on /add_nickname/")
+                print("error calling POST on /\(endpoint)")
                 print(error)
                 return
             }

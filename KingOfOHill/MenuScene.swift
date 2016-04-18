@@ -18,8 +18,6 @@ class MenuScene: SKScene {
     var leaderboardsButton = SKSpriteNode()
     let leaderboardsButtonTex = SKTexture(imageNamed: "Leaderboards")
     
-    let alert = UIAlertController(title: "New User", message: "Choose a nickname:", preferredStyle: .Alert)
-    
     override func didMoveToView(view: SKView) {
         super.didMoveToView(view)
         
@@ -53,14 +51,20 @@ class MenuScene: SKScene {
             let node = self.nodeAtPoint(pos)
                 
             if node == playButton {
-                if defaults.stringForKey(nicknameKeys.id) != nil && defaults.stringForKey(nicknameKeys.name) != nil {
-                    if let view = view {
-                        let scene = GameScene(fileNamed: "GameScene")
-                        scene!.scaleMode = SKSceneScaleMode.AspectFill
-                        view.presentScene(scene)
-                    }
+                let id = defaults.stringForKey(nicknameKeys.id)
+                let name = defaults.stringForKey(nicknameKeys.name)
+                
+                if id == nil || name == nil {
+                    setNickname("Choose a nickname:")
                 } else {
-                    setNickname()
+                    let rest = RestApiManager()
+                    
+                    rest.validate_nickname(name!, id: id!, callback: { (response) in
+                        if response["message"] as! String == "invalid" {
+                            print("yes")
+                            self.setNickname("We lost your nickname, sorry! Choose another:")
+                        }
+                    })
                 }
             }
             
@@ -80,27 +84,43 @@ class MenuScene: SKScene {
         static let name = "name"
     }
     
-    func setNickname() {
+    func setNickname(message: String) {
+        let alert = UIAlertController(title: "New User", message: message, preferredStyle: .Alert)
+        
         alert.addTextFieldWithConfigurationHandler({ (textField) -> Void in
             textField.text = ""
         })
         
         alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: { (action) -> Void in
-            let textField = self.alert.textFields![0] as UITextField
+            let textField = alert.textFields![0] as UITextField
             print("Text field: \(textField.text)")
             
             let nickname = textField.text!
             
             let rest = RestApiManager()
             rest.add_nickname(nickname, callback: {(response) in
-                let id = response["message"] as! NSInteger
+                if let id = response["message"] as? NSInteger {
                 
-                let defaults = NSUserDefaults.standardUserDefaults()
+                    let defaults = NSUserDefaults.standardUserDefaults()
                 
-                defaults.setValue(id, forKey: nicknameKeys.id)
-                defaults.setValue(nickname, forKey: nicknameKeys.name)
+                    defaults.setValue(id, forKey: nicknameKeys.id)
+                    defaults.setValue(nickname, forKey: nicknameKeys.name)
                 
-                defaults.synchronize()
+                    defaults.synchronize()
+                    
+                    if let view = self.view {
+                        let scene = GameScene(fileNamed: "GameScene")
+                        scene!.scaleMode = SKSceneScaleMode.AspectFill
+                        view.presentScene(scene)
+                    }
+                    
+                } else if let message = response["message"] as? String {
+                    if message == "nickname already in use" {
+                        self.setNickname("Nickname already in use! Choose another:")
+                    } else {
+                        self.setNickname("Server is being slow! Try again:")
+                    }
+                }
             })
             
         }))

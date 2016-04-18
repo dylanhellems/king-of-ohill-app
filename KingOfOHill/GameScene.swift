@@ -104,8 +104,11 @@ class GameScene: SKScene, CLLocationManagerDelegate {
         let nearestLoc = getNearestDiningHall()
         let nearestTime = getNearestTimeSlot()
         
+        let defaults = NSUserDefaults.standardUserDefaults()
+        let name = defaults.stringForKey("name")!
         
-        let alert = UIAlertController(title: "New High Score", message: "Score: 1000, Dining Hall: \(locations[nearestLoc]), Meal Time: \(timeSlots[nearestTime])", preferredStyle: .Alert)
+        let message = "Nickname: \(name), Score: 1000, Dining Hall: \(locations[nearestLoc]), Meal Time: \(timeSlots[nearestTime])"
+        let alert = UIAlertController(title: "New High Score", message: message, preferredStyle: .Alert)
         
         alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
         
