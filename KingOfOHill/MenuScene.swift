@@ -61,19 +61,22 @@ class MenuScene: SKScene {
                     
                     rest.validate_nickname(name!, id: id!, callback: { (response) in
                         if response["message"] as! String == "invalid" {
-                            print("yes")
                             self.setNickname("We lost your nickname, sorry! Choose another:")
+                        } else {
+                            if let view = self.view {
+                                let scene = GameScene(fileNamed: "GameScene")
+                                scene!.scaleMode = SKSceneScaleMode.AspectFill
+                                view.presentScene(scene)
+                            }
                         }
                     })
                 }
             }
             
             if node == leaderboardsButton {
-                if let view = view {
-                    let scene = LeaderboardScene(fileNamed: "LeaderboardScene")
-                    scene!.scaleMode = SKSceneScaleMode.AspectFill
-                    view.presentScene(scene)
-                }
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let vc = storyboard.instantiateViewControllerWithIdentifier("LeaderboardViewController") 
+                self.view?.window?.rootViewController?.presentViewController(vc, animated: true, completion: nil)
             }
             
         }

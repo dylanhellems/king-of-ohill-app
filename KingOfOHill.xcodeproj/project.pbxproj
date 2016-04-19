@@ -18,11 +18,9 @@
 		162D83381CB0905600D61913 /* KingOfOHillUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162D83371CB0905600D61913 /* KingOfOHillUITests.swift */; };
 		162D83461CB092C000D61913 /* MenuScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 162D83451CB092C000D61913 /* MenuScene.sks */; };
 		162D83481CB0930200D61913 /* MenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162D83471CB0930200D61913 /* MenuScene.swift */; };
-		162D834A1CB099C600D61913 /* LeaderboardScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162D83491CB099C600D61913 /* LeaderboardScene.swift */; };
-		162D834C1CB099DB00D61913 /* LeaderboardScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 162D834B1CB099DB00D61913 /* LeaderboardScene.sks */; };
 		162D83501CB09C7D00D61913 /* RestApiManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162D834F1CB09C7D00D61913 /* RestApiManager.swift */; };
 		162D83511CB09C7D00D61913 /* RestApiManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162D834F1CB09C7D00D61913 /* RestApiManager.swift */; };
-		162D83551CB0B53600D61913 /* SKMultilineLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162D83541CB0B53600D61913 /* SKMultilineLabel.swift */; };
+		D9CD9C661CC599EE002269A0 /* LeaderboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CD9C651CC599EE002269A0 /* LeaderboardViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,10 +58,8 @@
 		162D83391CB0905600D61913 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		162D83451CB092C000D61913 /* MenuScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = MenuScene.sks; sourceTree = "<group>"; };
 		162D83471CB0930200D61913 /* MenuScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuScene.swift; sourceTree = "<group>"; };
-		162D83491CB099C600D61913 /* LeaderboardScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeaderboardScene.swift; sourceTree = "<group>"; };
-		162D834B1CB099DB00D61913 /* LeaderboardScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = LeaderboardScene.sks; sourceTree = "<group>"; };
 		162D834F1CB09C7D00D61913 /* RestApiManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestApiManager.swift; sourceTree = "<group>"; };
-		162D83541CB0B53600D61913 /* SKMultilineLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKMultilineLabel.swift; sourceTree = "<group>"; };
+		D9CD9C651CC599EE002269A0 /* LeaderboardViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LeaderboardViewController.swift; path = ../LeaderboardViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +110,7 @@
 		162D83121CB0905600D61913 /* KingOfOHill */ = {
 			isa = PBXGroup;
 			children = (
+				D9CD9C651CC599EE002269A0 /* LeaderboardViewController.swift */,
 				162D83131CB0905600D61913 /* AppDelegate.swift */,
 				162D83151CB0905600D61913 /* GameScene.sks */,
 				162D83171CB0905600D61913 /* GameScene.swift */,
@@ -124,10 +121,7 @@
 				162D83231CB0905600D61913 /* Info.plist */,
 				162D83451CB092C000D61913 /* MenuScene.sks */,
 				162D83471CB0930200D61913 /* MenuScene.swift */,
-				162D83491CB099C600D61913 /* LeaderboardScene.swift */,
-				162D834B1CB099DB00D61913 /* LeaderboardScene.sks */,
 				162D834F1CB09C7D00D61913 /* RestApiManager.swift */,
-				162D83541CB0B53600D61913 /* SKMultilineLabel.swift */,
 			);
 			path = KingOfOHill;
 			sourceTree = "<group>";
@@ -259,7 +253,6 @@
 			files = (
 				162D83161CB0905600D61913 /* GameScene.sks in Resources */,
 				162D83221CB0905600D61913 /* LaunchScreen.storyboard in Resources */,
-				162D834C1CB099DB00D61913 /* LeaderboardScene.sks in Resources */,
 				162D831F1CB0905600D61913 /* Assets.xcassets in Resources */,
 				162D83461CB092C000D61913 /* MenuScene.sks in Resources */,
 				162D831D1CB0905600D61913 /* Main.storyboard in Resources */,
@@ -289,10 +282,9 @@
 			files = (
 				162D83181CB0905600D61913 /* GameScene.swift in Sources */,
 				162D83481CB0930200D61913 /* MenuScene.swift in Sources */,
-				162D83551CB0B53600D61913 /* SKMultilineLabel.swift in Sources */,
 				162D83501CB09C7D00D61913 /* RestApiManager.swift in Sources */,
 				162D831A1CB0905600D61913 /* GameViewController.swift in Sources */,
-				162D834A1CB099C600D61913 /* LeaderboardScene.swift in Sources */,
+				D9CD9C661CC599EE002269A0 /* LeaderboardViewController.swift in Sources */,
 				162D83141CB0905600D61913 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
