@@ -95,6 +95,7 @@ class GameScene: SKScene, CLLocationManagerDelegate {
         _locManager.distanceFilter = kCLDistanceFilterNone
         _locManager.desiredAccuracy = kCLLocationAccuracyBest
         _locManager.requestWhenInUseAuthorization()
+        _locManager.startUpdatingLocation()
     }
     
     let locations = ["OHill", "Runk", "Newcomb"]
