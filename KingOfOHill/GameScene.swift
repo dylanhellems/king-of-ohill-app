@@ -5,11 +5,24 @@
 //  Created by Dylan Hellems on 4/2/16.
 //  Copyright (c) 2016 Dylan Hellems. All rights reserved.
 //
+// Based much of main game components on a tutorial found at https://www.raywenderlich.com/87231/make-game-like-mega-jump-sprite-kit-swift-part-1
 
 import SpriteKit
 import CoreLocation
 
-class GameScene: SKScene, CLLocationManagerDelegate {
+class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
+    
+    // Layered Nodes
+    var backgroundNode: SKNode!
+    var foregroundNode: SKNode!
+    var hudNode: SKNode!
+    
+    var player: SKNode!
+    
+    var tapToStartNode: SKNode!
+    
+    // To Accommodate iPhone 6
+    var scaleFactor: CGFloat!
     
     let _locManager = CLLocationManager()
     
@@ -18,13 +31,36 @@ class GameScene: SKScene, CLLocationManagerDelegate {
     
     override func didMoveToView(view: SKView) {
         
-        /* Setup your scene here */
-        let myLabel = SKLabelNode(fontNamed:"Chalkduster")
-        myLabel.text = "Hello, World!"
-        myLabel.fontSize = 45
-        myLabel.position = CGPoint(x:CGRectGetMidX(self.frame), y:CGRectGetMidY(self.frame))
+        scaleFactor = self.size.width / 320.0
         
-        self.addChild(myLabel)
+        // Create the game nodes
+        backgroundNode = createBackgroundNode()
+        self.addChild(backgroundNode)
+        
+        foregroundNode = SKNode()
+        foregroundNode.zPosition = 1
+        self.addChild(foregroundNode)
+        
+        hudNode = SKNode()
+        hudNode.zPosition = 2
+        self.addChild(hudNode)
+        
+        // Create HUD
+        tapToStartNode = SKSpriteNode(imageNamed: "TapToStart")
+        tapToStartNode.position = CGPoint(x: self.size.width / 2, y: 180.0)
+        hudNode.addChild(tapToStartNode)
+        
+        // Create player
+        player = createPlayer()
+        foregroundNode.addChild(player)
+        
+        // Add a food
+        let food = createFoodAtPosition(CGPoint(x: 160, y: 220))
+        foregroundNode.addChild(food)
+        
+        // Config physics
+        physicsWorld.contactDelegate = self
+        physicsWorld.gravity = CGVector(dx: 0.0, dy: -2.0)
         
         menuButton = SKSpriteNode(texture: menuButtonTex)
         let menuButtonSize = menuButton.size
@@ -51,22 +87,20 @@ class GameScene: SKScene, CLLocationManagerDelegate {
                     view.presentScene(scene)
                 }
             } else {
-
-                let location = touch.locationInNode(self)
                 
-                let sprite = SKSpriteNode(imageNamed:"Spaceship")
-            
-                sprite.xScale = 0.5
-                sprite.yScale = 0.5
-                sprite.position = location
-            
-                let action = SKAction.rotateByAngle(CGFloat(M_PI), duration:1)
-            
-                sprite.runAction(SKAction.repeatActionForever(action))
-            
-                self.addChild(sprite)
+                // If we're already playing, ignore touches
+                if player.physicsBody!.dynamic {
+                    return
+                }
                 
-                createAlert()
+                // Remove the Tap to Start node
+                tapToStartNode.removeFromParent()
+                
+                // Start the player by putting them into the physics simulation
+                player.physicsBody?.dynamic = true
+                
+                player.physicsBody?.applyImpulse(CGVector(dx: 0.0, dy: 20.0))
+                
             }
             
         }
@@ -77,6 +111,93 @@ class GameScene: SKScene, CLLocationManagerDelegate {
         /* Called before each frame is rendered */
         
     }
+    
+    func didBeginContact(contact: SKPhysicsContact) {
+
+        var updateHUD = false
+        
+
+        let whichNode = (contact.bodyA.node != player) ? contact.bodyA.node : contact.bodyB.node
+        let other = whichNode as! GameObjectNode
+        
+
+        updateHUD = other.collisionWithPlayer(player)
+        
+        // Update the HUD if necessary
+        if updateHUD {
+            
+        }
+        
+    }
+    
+    func createBackgroundNode() -> SKNode {
+        
+        // Create the node
+        let backgroundNode = SKNode()
+        let ySpacing = 64 * scaleFactor
+        
+        // Go through images until the entire background is built
+        for index in 0...19 {
+
+            let node = SKSpriteNode(imageNamed:String(format: "Background%02d", index + 1))
+
+            node.setScale(scaleFactor)
+            node.anchorPoint = CGPoint(x: 0.5, y: 0.0)
+            node.position = CGPoint(x: self.size.width / 2, y: ySpacing * CGFloat(index))
+
+            backgroundNode.addChild(node)
+        }
+        
+        // Return the completed background node
+        return backgroundNode
+        
+    }
+    
+    func createPlayer() -> SKNode {
+        let playerNode = SKNode()
+        playerNode.position = CGPoint(x: self.size.width / 2, y: 80.0)
+        
+        let sprite = SKSpriteNode(imageNamed: "Player")
+        playerNode.addChild(sprite)
+        
+        // Config physics body
+        playerNode.physicsBody = SKPhysicsBody(circleOfRadius: sprite.size.width / 2)
+        playerNode.physicsBody?.dynamic = false
+        playerNode.physicsBody?.allowsRotation = false
+        playerNode.physicsBody?.restitution = 1.0
+        playerNode.physicsBody?.friction = 0.0
+        playerNode.physicsBody?.angularDamping = 0.0
+        playerNode.physicsBody?.linearDamping = 0.0
+        
+        playerNode.physicsBody?.usesPreciseCollisionDetection = true
+        playerNode.physicsBody?.categoryBitMask = CollisionCategoryBitmask.Player
+        playerNode.physicsBody?.collisionBitMask = 0
+        playerNode.physicsBody?.contactTestBitMask = CollisionCategoryBitmask.Food | CollisionCategoryBitmask.Platform
+        
+        return playerNode
+    }
+
+    func createFoodAtPosition(position: CGPoint) -> FoodNode {
+
+        let node = FoodNode()
+        let thePosition = CGPoint(x: position.x * scaleFactor, y: position.y)
+        node.position = thePosition
+        node.name = "NODE_STAR"
+    
+        var sprite: SKSpriteNode
+        sprite = SKSpriteNode(imageNamed: "Star")
+        node.addChild(sprite)
+    
+        node.physicsBody = SKPhysicsBody(circleOfRadius: sprite.size.width / 2)
+        node.physicsBody?.dynamic = false
+        
+        node.physicsBody?.categoryBitMask = CollisionCategoryBitmask.Food
+        node.physicsBody?.collisionBitMask = 0
+        
+        return node
+    }
+    
+    // Location Stuff
     
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let loc = locations[0] as CLLocation

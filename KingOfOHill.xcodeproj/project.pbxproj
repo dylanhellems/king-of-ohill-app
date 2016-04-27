@@ -20,6 +20,9 @@
 		162D83481CB0930200D61913 /* MenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162D83471CB0930200D61913 /* MenuScene.swift */; };
 		162D83501CB09C7D00D61913 /* RestApiManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162D834F1CB09C7D00D61913 /* RestApiManager.swift */; };
 		162D83511CB09C7D00D61913 /* RestApiManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162D834F1CB09C7D00D61913 /* RestApiManager.swift */; };
+		D91252271CD0400C00A7F28C /* Assets.atlas in Resources */ = {isa = PBXBuildFile; fileRef = D91252251CD0400C00A7F28C /* Assets.atlas */; };
+		D91252281CD0400C00A7F28C /* Backgrounds in Resources */ = {isa = PBXBuildFile; fileRef = D91252261CD0400C00A7F28C /* Backgrounds */; };
+		D912522A1CD047CB00A7F28C /* GameObjectNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91252291CD047CB00A7F28C /* GameObjectNode.swift */; };
 		D9CD9C661CC599EE002269A0 /* LeaderboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CD9C651CC599EE002269A0 /* LeaderboardViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -59,6 +62,9 @@
 		162D83451CB092C000D61913 /* MenuScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = MenuScene.sks; sourceTree = "<group>"; };
 		162D83471CB0930200D61913 /* MenuScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuScene.swift; sourceTree = "<group>"; };
 		162D834F1CB09C7D00D61913 /* RestApiManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestApiManager.swift; sourceTree = "<group>"; };
+		D91252251CD0400C00A7F28C /* Assets.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = Assets.atlas; sourceTree = "<group>"; };
+		D91252261CD0400C00A7F28C /* Backgrounds */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Backgrounds; sourceTree = "<group>"; };
+		D91252291CD047CB00A7F28C /* GameObjectNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameObjectNode.swift; sourceTree = "<group>"; };
 		D9CD9C651CC599EE002269A0 /* LeaderboardViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeaderboardViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -110,6 +116,7 @@
 		162D83121CB0905600D61913 /* KingOfOHill */ = {
 			isa = PBXGroup;
 			children = (
+				D91252241CD03FF100A7F28C /* Supporting Files */,
 				D9CD9C651CC599EE002269A0 /* LeaderboardViewController.swift */,
 				162D83131CB0905600D61913 /* AppDelegate.swift */,
 				162D83151CB0905600D61913 /* GameScene.sks */,
@@ -122,6 +129,7 @@
 				162D83451CB092C000D61913 /* MenuScene.sks */,
 				162D83471CB0930200D61913 /* MenuScene.swift */,
 				162D834F1CB09C7D00D61913 /* RestApiManager.swift */,
+				D91252291CD047CB00A7F28C /* GameObjectNode.swift */,
 			);
 			path = KingOfOHill;
 			sourceTree = "<group>";
@@ -142,6 +150,15 @@
 				162D83391CB0905600D61913 /* Info.plist */,
 			);
 			path = KingOfOHillUITests;
+			sourceTree = "<group>";
+		};
+		D91252241CD03FF100A7F28C /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				D91252251CD0400C00A7F28C /* Assets.atlas */,
+				D91252261CD0400C00A7F28C /* Backgrounds */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -251,10 +268,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D91252281CD0400C00A7F28C /* Backgrounds in Resources */,
 				162D83161CB0905600D61913 /* GameScene.sks in Resources */,
 				162D83221CB0905600D61913 /* LaunchScreen.storyboard in Resources */,
 				162D831F1CB0905600D61913 /* Assets.xcassets in Resources */,
 				162D83461CB092C000D61913 /* MenuScene.sks in Resources */,
+				D91252271CD0400C00A7F28C /* Assets.atlas in Resources */,
 				162D831D1CB0905600D61913 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -285,6 +304,7 @@
 				162D83501CB09C7D00D61913 /* RestApiManager.swift in Sources */,
 				162D831A1CB0905600D61913 /* GameViewController.swift in Sources */,
 				D9CD9C661CC599EE002269A0 /* LeaderboardViewController.swift in Sources */,
+				D912522A1CD047CB00A7F28C /* GameObjectNode.swift in Sources */,
 				162D83141CB0905600D61913 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
