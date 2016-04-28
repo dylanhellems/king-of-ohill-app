@@ -5,7 +5,7 @@
 //  Created by Dylan Hellems on 4/2/16.
 //  Copyright (c) 2016 Dylan Hellems. All rights reserved.
 //
-// Based much of main game components on a tutorial found at https://www.raywenderlich.com/87231/make-game-like-mega-jump-sprite-kit-swift-part-1
+// Based much of base game components on a tutorial found at https://www.raywenderlich.com/87231/make-game-like-mega-jump-sprite-kit-swift-part-1
 
 import SpriteKit
 import CoreLocation
@@ -207,7 +207,7 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
         if updateHUD {
             
             let num_foods = foods.count + 1
-            foods.append(createFoodAtPosition(CGPoint(x: 0, y: 220 * num_foods)))
+            foods.append(createFoodAtPosition(CGPoint(x: Int(arc4random_uniform(120) + 100), y: 220 * num_foods)))
             foregroundNode.addChild(foods[num_foods - 1])
             
             score = score + 1
@@ -333,12 +333,20 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
         let message = "Nickname: \(name), Score: \(score), Dining Hall: \(locations[nearestLoc]), Meal Time: \(timeSlots[nearestTime])"
         let alert = UIAlertController(title: "New High Score", message: message, preferredStyle: .Alert)
         
+        alert.addAction(UIAlertAction(title: "Menu", style: .Default, handler: {(UIAlertAction) in
+            if let view = self.view {
+                let scene = MenuScene(fileNamed: "MenuScene")
+                scene!.scaleMode = SKSceneScaleMode.AspectFill
+                view.presentScene(scene)
+            }
+        }))
+        
         alert.addAction(UIAlertAction(title: "Play Again", style: .Default, handler: { (UIAlertAction) in
             let gameScene = GameScene(size: self.size)
             let transition = SKTransition.doorsCloseHorizontalWithDuration(0.5)
             gameScene.scaleMode = SKSceneScaleMode.AspectFill
             self.scene!.view?.presentScene(gameScene, transition: transition)
-        } ))
+        }))
         
         self.view?.window?.rootViewController?.presentViewController(alert, animated: true, completion: nil)
     }
