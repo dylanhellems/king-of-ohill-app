@@ -56,6 +56,8 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("pauseGameScene"), name: "PauseGameScene", object: nil)
         
+        self.backgroundColor = UIColor.orangeColor()
+        
         // Create the game nodes
         foregroundNode = SKNode()
         foregroundNode.zPosition = 1
@@ -143,7 +145,7 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
                 // Start the player by putting them into the physics simulation
                 player.physicsBody?.dynamic = true
                 
-                player.physicsBody?.applyImpulse(CGVector(dx: 0.0, dy: 20.0))
+                player.physicsBody?.applyImpulse(CGVector(dx: 0.0, dy: 100.0))
                 
             }
             
@@ -172,7 +174,6 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
                 print("lose")
                 self.scene?.paused = true
                 postScore()
-                createAlert()
             }
             
         }
@@ -304,10 +305,12 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
         let nearestLoc = getNearestDiningHall()
         let nearestTime = getNearestTimeSlot()
         
-        rest.add_score(name, score: "\(score)", time: "\(nearestTime)", location: "\(nearestLoc)", callback: { _ in })
+        rest.add_score(name, score: "\(score)", time: "\(nearestTime)", location: "\(nearestLoc)", callback: { (response) in
+            self.createAlert("\(response["message"]!)")
+        })
     }
     
-    func createAlert() {
+    func createAlert(title: String) {
         let nearestLoc = getNearestDiningHall()
         let nearestTime = getNearestTimeSlot()
         
@@ -315,7 +318,7 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
         let name = defaults.stringForKey("name")!
         
         let message = "Nickname: \(name), Score: \(score), Dining Hall: \(locations[nearestLoc]), Meal Time: \(timeSlots[nearestTime])"
-        let alert = UIAlertController(title: "New High Score", message: message, preferredStyle: .Alert)
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .Alert)
         
         alert.addAction(UIAlertAction(title: "Menu", style: .Default, handler: {(UIAlertAction) in
             if let view = self.view {

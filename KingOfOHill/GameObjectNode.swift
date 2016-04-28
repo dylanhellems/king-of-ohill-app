@@ -33,7 +33,7 @@ class FoodNode: GameObjectNode {
     override func collisionWithPlayer(player: SKNode) -> Bool {
         
         // Boost the player up
-        player.physicsBody?.velocity = CGVector(dx: player.physicsBody!.velocity.dx, dy: 400.0)
+        player.physicsBody?.velocity = CGVector(dx: player.physicsBody!.velocity.dx, dy: 500.0)
         
         // Remove this Food
         self.removeFromParent()
