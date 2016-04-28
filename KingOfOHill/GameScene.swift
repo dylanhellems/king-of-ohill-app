@@ -9,6 +9,7 @@
 
 import SpriteKit
 import CoreLocation
+import CoreMotion
 
 class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
     
@@ -26,18 +27,31 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
     var score: Int!
     var scoreNode: SKLabelNode!
     
-    // To Accommodate iPhone 6
-    var scaleFactor: CGFloat!
+    var menuButton: SKSpriteNode!
     
+    let heightConstant = CGFloat(220 * 16)
+    
+    var scaleFactor: CGFloat!
+    var lastIndex: Int!
+    var nextHeight: CGFloat!
+    var maxHeight: CGFloat!
+    
+    // Location manager for gps
     let _locManager = CLLocationManager()
     
-    var menuButton = SKSpriteNode()
-    let menuButtonTex = SKTexture(imageNamed: "Menu")
+    // Motion manager for accelerometer
+    let motionManager = CMMotionManager()
+    
+    // Acceleration value from accelerometer
+    var xAcceleration: CGFloat = 0.0
+    
     
     override func didMoveToView(view: SKView) {
         
         scaleFactor = self.size.width / 320.0
-        
+        lastIndex = 0
+        nextHeight = heightConstant
+        maxHeight = 0
         
         // Create the game nodes
         backgroundNode = createBackgroundNode()
@@ -64,6 +78,7 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
         scoreNode.fontName = "SanFranciscoDisplay-Black"
         hudNode.addChild(scoreNode)
         
+        let menuButtonTex = SKTexture(imageNamed: "Menu")
         menuButton = SKSpriteNode(texture: menuButtonTex)
         let menuButtonSize = menuButton.size
         menuButton.position = CGPointMake(frame.midX - screenSize.width/2 + menuButtonSize.width/2, frame.minY + menuButtonSize.height/2)
@@ -84,6 +99,12 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
         // Config physics
         physicsWorld.contactDelegate = self
         physicsWorld.gravity = CGVector(dx: 0.0, dy: -2.0)
+        
+        motionManager.accelerometerUpdateInterval = 0.2
+        motionManager.startAccelerometerUpdatesToQueue(NSOperationQueue.currentQueue()!, withHandler: { (accelerometerData:CMAccelerometerData?, error: NSError?) in
+            let acceleration = accelerometerData!.acceleration
+            self.xAcceleration = (CGFloat(acceleration.x) * 0.75) + (self.xAcceleration * 0.25)
+        })
         
         runLocationServices()
         
@@ -125,12 +146,50 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
    
     override func update(currentTime: CFTimeInterval) {
         
-        // Calculate player y offset
-        if player != nil && player.position.y > 200.0 {
-            backgroundNode.position = CGPoint(x: 0.0, y: -((player.position.y - 200.0)))
-            foregroundNode.position = CGPoint(x: 0.0, y: -(player.position.y - 200.0))
+        if player != nil {
+            
+            if player.position.y > maxHeight {
+                maxHeight = player.position.y
+            }
+            
+            // Calculate player y offset
+            if player.position.y > 200.0 && player.position.y >= maxHeight {
+                backgroundNode.position = CGPoint(x: 0.0, y: -((player.position.y - 200.0)))
+                foregroundNode.position = CGPoint(x: 0.0, y: -(player.position.y - 200.0))
+            }
+            
+            if player.position.y > nextHeight {
+                print("true")
+                nextHeight = nextHeight + heightConstant
+                let newBG = createBackgroundNode()
+                backgroundNode.addChild(newBG)
+            }
+            
+            if player.position.y < maxHeight - 500 {
+                print("lose")
+                self.scene?.paused = true
+                postScore()
+                createAlert()
+            }
+            
         }
         
+    }
+    
+    override func didSimulatePhysics() {
+        
+        if player != nil {
+            
+            // Set velocity based on x-axis acceleration
+            player.physicsBody?.velocity = CGVector(dx: xAcceleration * 400.0, dy: player.physicsBody!.velocity.dy)
+        
+            // Check x bounds
+            if player.position.x < -20.0 {
+                player.position = CGPoint(x: self.size.width - 20.0, y: player.position.y)
+            } else if (player.position.x > self.size.width + 20.0) {
+                player.position = CGPoint(x: 20.0, y: player.position.y)
+            }
+        }
     }
     
     func didBeginContact(contact: SKPhysicsContact) {
@@ -148,7 +207,7 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
         if updateHUD {
             
             let num_foods = foods.count + 1
-            foods.append(createFoodAtPosition(CGPoint(x: 160, y: 220 * num_foods)))
+            foods.append(createFoodAtPosition(CGPoint(x: 0, y: 220 * num_foods)))
             foregroundNode.addChild(foods[num_foods - 1])
             
             score = score + 1
@@ -171,9 +230,11 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
 
             node.setScale(scaleFactor)
             node.anchorPoint = CGPoint(x: 0.5, y: 0.0)
-            node.position = CGPoint(x: self.size.width / 2, y: ySpacing * CGFloat(index))
+            node.position = CGPoint(x: self.size.width / 2, y: ySpacing * CGFloat(lastIndex))
 
             backgroundNode.addChild(node)
+            
+            lastIndex = lastIndex + 1
         }
         
         // Return the completed background node
@@ -250,6 +311,18 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
     let locations = ["OHill", "Runk", "Newcomb"]
     let timeSlots = ["Breakfast", "Lunch", "Dinner", "Midnight Snack"]
     
+    func postScore() {
+        let rest = RestApiManager()
+        
+        let defaults = NSUserDefaults.standardUserDefaults()
+        let name = defaults.stringForKey("id")!
+        
+        let nearestLoc = getNearestDiningHall()
+        let nearestTime = getNearestTimeSlot()
+        
+        rest.add_score(name, score: "\(score)", time: "\(nearestTime)", location: "\(nearestLoc)", callback: { _ in })
+    }
+    
     func createAlert() {
         let nearestLoc = getNearestDiningHall()
         let nearestTime = getNearestTimeSlot()
@@ -257,10 +330,15 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
         let defaults = NSUserDefaults.standardUserDefaults()
         let name = defaults.stringForKey("name")!
         
-        let message = "Nickname: \(name), Score: 1000, Dining Hall: \(locations[nearestLoc]), Meal Time: \(timeSlots[nearestTime])"
+        let message = "Nickname: \(name), Score: \(score), Dining Hall: \(locations[nearestLoc]), Meal Time: \(timeSlots[nearestTime])"
         let alert = UIAlertController(title: "New High Score", message: message, preferredStyle: .Alert)
         
-        alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+        alert.addAction(UIAlertAction(title: "Play Again", style: .Default, handler: { (UIAlertAction) in
+            let gameScene = GameScene(size: self.size)
+            let transition = SKTransition.doorsCloseHorizontalWithDuration(0.5)
+            gameScene.scaleMode = SKSceneScaleMode.AspectFill
+            self.scene!.view?.presentScene(gameScene, transition: transition)
+        } ))
         
         self.view?.window?.rootViewController?.presentViewController(alert, animated: true, completion: nil)
     }

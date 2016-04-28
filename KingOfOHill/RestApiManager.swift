@@ -87,6 +87,13 @@ class RestApiManager: NSObject {
         post(endpoint, params: [("name", nickname), ("id", id)], callback: callback)
     }
     
+    func add_score(nickname: String, score: String, time: String, location: String, callback: (Dictionary<String, AnyObject>) -> ()) {
+        let endpoint = urlBase + "add_score/"
+        
+        post(endpoint, params: [("nickname", nickname), ("score", score), ("timeframe", time), ("location", location)], callback: callback)
+        
+    }
+    
     func post(endpoint: String, params: [(String, String)], callback: (Dictionary<String, AnyObject>) -> ()) {
         
         guard let url = NSURL(string: endpoint) else {
@@ -98,6 +105,7 @@ class RestApiManager: NSObject {
         
         var bodyData = ""
         for (key, value) in params {
+            print(key + ": " + value)
             let scapedKey = key.stringByAddingPercentEncodingWithAllowedCharacters(
                 .URLHostAllowedCharacterSet())!
             let scapedValue = value.stringByAddingPercentEncodingWithAllowedCharacters(
