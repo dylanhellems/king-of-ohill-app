@@ -45,6 +45,7 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
     // Acceleration value from accelerometer
     var xAcceleration: CGFloat = 0.0
     
+    var pause: Bool!
     
     override func didMoveToView(view: SKView) {
         
@@ -52,6 +53,9 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
         lastIndex = 0
         nextHeight = heightConstant
         maxHeight = 0
+        pause = false
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("pauseGameScene"), name: "PauseGameScene", object: nil)
         
         // Create the game nodes
         backgroundNode = createBackgroundNode()
@@ -70,18 +74,18 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
         tapToStartNode.position = CGPoint(x: self.size.width / 2, y: 180.0)
         hudNode.addChild(tapToStartNode)
         
-        let screenSize = UIScreen.mainScreen().bounds.size
+        let screenSize = UIScreen.mainScreen().bounds
         
         score = 0
         scoreNode = SKLabelNode(text: "\(score)")
-        scoreNode.position = CGPointMake(frame.midX - screenSize.width/2 + 20, frame.maxY - 50)
+        scoreNode.position = CGPointMake(frame.midX - screenSize.width/2 - 50, frame.maxY - 50)
         scoreNode.fontName = "SanFranciscoDisplay-Black"
         hudNode.addChild(scoreNode)
         
         let menuButtonTex = SKTexture(imageNamed: "Menu")
         menuButton = SKSpriteNode(texture: menuButtonTex)
         let menuButtonSize = menuButton.size
-        menuButton.position = CGPointMake(frame.midX - screenSize.width/2 + menuButtonSize.width/2, frame.minY + menuButtonSize.height/2)
+        menuButton.position = CGPointMake(frame.midX - screenSize.width/2 - 50, frame.minY + menuButtonSize.height/2)
         hudNode.addChild(menuButton)
         
         // Create player
@@ -128,11 +132,17 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
                 
                 // If we're already playing, ignore touches
                 if player.physicsBody!.dynamic {
+                    
+                    if self.view?.paused == true {
+                        self.view?.paused = false
+                        tapToStartNode.hidden = true
+                    }
+                    
                     return
                 }
                 
                 // Remove the Tap to Start node
-                tapToStartNode.removeFromParent()
+                tapToStartNode.hidden = true
                 
                 // Start the player by putting them into the physics simulation
                 player.physicsBody?.dynamic = true
@@ -145,6 +155,11 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
     }
    
     override func update(currentTime: CFTimeInterval) {
+        
+        if pause == true {
+            self.view?.paused = true
+            pause = false
+        }
         
         if player != nil {
             
@@ -174,6 +189,12 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
             
         }
         
+    }
+    
+    func pauseGameScene() {
+        print("pause game")
+        tapToStartNode.hidden = false
+        pause = true
     }
     
     override func didSimulatePhysics() {
