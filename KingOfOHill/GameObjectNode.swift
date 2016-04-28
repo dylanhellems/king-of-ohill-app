@@ -20,10 +20,14 @@ class GameObjectNode: SKNode {
         return false
     }
     
-    func checkNodeRemoval(playerY: CGFloat) {
-        if playerY > self.position.y + 300.0 {
+    func checkNodeRemoval(playerY: CGFloat) -> Bool {
+        if playerY > self.position.y + 200 {
             self.removeFromParent()
+            NSNotificationCenter.defaultCenter().postNotificationName("AddFood", object: self)
+            return true
         }
+        
+        return false
     }
     
 }
@@ -33,10 +37,11 @@ class FoodNode: GameObjectNode {
     override func collisionWithPlayer(player: SKNode) -> Bool {
         
         // Boost the player up
-        player.physicsBody?.velocity = CGVector(dx: player.physicsBody!.velocity.dx, dy: 500.0)
+        player.physicsBody?.velocity = CGVector(dx: player.physicsBody!.velocity.dx, dy: 425.0)
         
         // Remove this Food
         self.removeFromParent()
+        NSNotificationCenter.defaultCenter().postNotificationName("AddFood", object: self)
         
         // The HUD needs updating to show the new stars and score
         return true

@@ -21,7 +21,8 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
     
     var tapToStartNode: SKNode!
     
-    var foods: [SKNode]!
+    var foods: [GameObjectNode]!
+    var foodsCount: Int!
     
     var score: Int!
     var scoreNode: SKLabelNode!
@@ -44,17 +45,16 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
     // Acceleration value from accelerometer
     var xAcceleration: CGFloat = 0.0
     
-    var pause: Bool!
-    
     override func didMoveToView(view: SKView) {
         
         scaleFactor = self.size.width / 320.0
         lastIndex = 0
         nextHeight = heightConstant
         maxHeight = 0
-        pause = false
+        foodsCount = 3
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("pauseGameScene"), name: "PauseGameScene", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("addFood"), name: "AddFood", object: nil)
         
         self.backgroundColor = UIColor.orangeColor()
         
@@ -72,30 +72,29 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
         tapToStartNode.position = CGPoint(x: self.size.width / 2, y: 180.0)
         hudNode.addChild(tapToStartNode)
         
-        let screenSize = UIScreen.mainScreen().bounds
-        
         score = 0
         scoreNode = SKLabelNode(text: "\(score)")
-        scoreNode.position = CGPointMake(frame.midX - screenSize.width/2 - 50, frame.maxY - 50)
+        scoreNode.position = CGPointMake(325, frame.maxY - 50)
         scoreNode.fontName = "SanFranciscoDisplay-Black"
         hudNode.addChild(scoreNode)
         
         let menuButtonTex = SKTexture(imageNamed: "Menu")
         menuButton = SKSpriteNode(texture: menuButtonTex)
         let menuButtonSize = menuButton.size
-        menuButton.position = CGPointMake(frame.midX - screenSize.width/2 - 50, frame.minY + menuButtonSize.height/2)
+        menuButton.position = CGPointMake(325, frame.minY + menuButtonSize.height/2)
         hudNode.addChild(menuButton)
         
         // Create player
         player = createPlayer()
         foregroundNode.addChild(player)
         
-        foods = [SKNode]()
+        foods = [GameObjectNode]()
         
         // Add a food
         for i in 1...3 {
-            foods.append(createFoodAtPosition(CGPoint(x: 160, y: 220 * i)))
-            foregroundNode.addChild(foods[i - 1])
+            let food = createFoodAtPosition(CGPoint(x: 160, y: 220 * i))
+            foods.append(food)
+            foregroundNode.addChild(food)
         }
         
         // Config physics
@@ -105,7 +104,7 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
         motionManager.accelerometerUpdateInterval = 0.2
         motionManager.startAccelerometerUpdatesToQueue(NSOperationQueue.currentQueue()!, withHandler: { (accelerometerData:CMAccelerometerData?, error: NSError?) in
             let acceleration = accelerometerData!.acceleration
-            self.xAcceleration = (CGFloat(acceleration.x) * 0.75) + (self.xAcceleration * 0.25)
+            self.xAcceleration = (CGFloat(acceleration.x) * 0.75) + (self.xAcceleration * 0.50)
         })
         
         runLocationServices()
@@ -133,6 +132,7 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
                     
                     if self.view?.paused == true {
                         self.view?.paused = false
+                        self.scene?.paused = false
                         tapToStartNode.hidden = true
                     }
                     
@@ -153,11 +153,7 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
     }
    
     override func update(currentTime: CFTimeInterval) {
-        
-        if pause == true {
-            self.view?.paused = true
-            pause = false
-        }
+   
         
         if player != nil {
             
@@ -176,6 +172,14 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
                 postScore()
             }
             
+            if foods.count > 0 {
+                for food in foods {
+                    if food.checkNodeRemoval(player.position.y) == true {
+                        foods.removeAtIndex(foods.indexOf(food)!)
+                    }
+                }
+            }
+            
         }
         
     }
@@ -183,7 +187,8 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
     func pauseGameScene() {
         print("pause game")
         tapToStartNode.hidden = false
-        pause = true
+        self.view?.paused = true
+        self.scene?.paused = true
     }
     
     override func didSimulatePhysics() {
@@ -192,12 +197,14 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
             
             // Set velocity based on x-axis acceleration
             player.physicsBody?.velocity = CGVector(dx: xAcceleration * 400.0, dy: player.physicsBody!.velocity.dy)
+            
+            print(player.position.x)
         
             // Check x bounds
-            if player.position.x < -20.0 {
-                player.position = CGPoint(x: self.size.width - 20.0, y: player.position.y)
-            } else if (player.position.x > self.size.width + 20.0) {
-                player.position = CGPoint(x: 20.0, y: player.position.y)
+            if player.position.x < 320 {
+                player.position = CGPoint(x: 320, y: player.position.y)
+            } else if (player.position.x > 690) {
+                player.position = CGPoint(x: 690, y: player.position.y)
             }
         }
     }
@@ -216,9 +223,7 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
         // Update the HUD if necessary
         if updateHUD {
             
-            let num_foods = foods.count + 1
-            foods.append(createFoodAtPosition(CGPoint(x: Int(arc4random_uniform(120) + 100), y: 220 * num_foods)))
-            foregroundNode.addChild(foods[num_foods - 1])
+            foods.removeAtIndex(foods.indexOf(other)!)
             
             score = score + 1
             scoreNode.text = "\(score)"
@@ -250,6 +255,13 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
         
         return playerNode
     }
+    
+    func addFood() {
+        foodsCount = foodsCount + 1
+        let food = createFoodAtPosition(CGPoint(x: Int(arc4random_uniform(120) + 100), y: 220 * foodsCount))
+        foods.append(food)
+        foregroundNode.addChild(food)
+    }
 
     func createFoodAtPosition(position: CGPoint) -> FoodNode {
 
@@ -267,6 +279,7 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
         
         node.physicsBody?.categoryBitMask = CollisionCategoryBitmask.Food
         node.physicsBody?.collisionBitMask = 0
+    
         
         return node
     }
