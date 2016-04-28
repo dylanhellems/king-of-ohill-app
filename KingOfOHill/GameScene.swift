@@ -21,6 +21,11 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
     
     var tapToStartNode: SKNode!
     
+    var foods: [SKNode]!
+    
+    var score: Int!
+    var scoreNode: SKLabelNode!
+    
     // To Accommodate iPhone 6
     var scaleFactor: CGFloat!
     
@@ -32,6 +37,7 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
     override func didMoveToView(view: SKView) {
         
         scaleFactor = self.size.width / 320.0
+        
         
         // Create the game nodes
         backgroundNode = createBackgroundNode()
@@ -50,23 +56,34 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
         tapToStartNode.position = CGPoint(x: self.size.width / 2, y: 180.0)
         hudNode.addChild(tapToStartNode)
         
+        let screenSize = UIScreen.mainScreen().bounds.size
+        
+        score = 0
+        scoreNode = SKLabelNode(text: "\(score)")
+        scoreNode.position = CGPointMake(frame.midX - screenSize.width/2 + 20, frame.maxY - 50)
+        scoreNode.fontName = "SanFranciscoDisplay-Black"
+        hudNode.addChild(scoreNode)
+        
+        menuButton = SKSpriteNode(texture: menuButtonTex)
+        let menuButtonSize = menuButton.size
+        menuButton.position = CGPointMake(frame.midX - screenSize.width/2 + menuButtonSize.width/2, frame.minY + menuButtonSize.height/2)
+        hudNode.addChild(menuButton)
+        
         // Create player
         player = createPlayer()
         foregroundNode.addChild(player)
         
+        foods = [SKNode]()
+        
         // Add a food
-        let food = createFoodAtPosition(CGPoint(x: 160, y: 220))
-        foregroundNode.addChild(food)
+        for i in 1...3 {
+            foods.append(createFoodAtPosition(CGPoint(x: 160, y: 220 * i)))
+            foregroundNode.addChild(foods[i - 1])
+        }
         
         // Config physics
         physicsWorld.contactDelegate = self
         physicsWorld.gravity = CGVector(dx: 0.0, dy: -2.0)
-        
-        menuButton = SKSpriteNode(texture: menuButtonTex)
-        let menuButtonSize = menuButton.size
-        let screenSize = UIScreen.mainScreen().bounds.size
-        menuButton.position = CGPointMake(frame.midX - screenSize.width/2 + menuButtonSize.width/2, frame.minY + menuButtonSize.height/2)
-        self.addChild(menuButton)
         
         runLocationServices()
         
@@ -108,7 +125,11 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
    
     override func update(currentTime: CFTimeInterval) {
         
-        /* Called before each frame is rendered */
+        // Calculate player y offset
+        if player != nil && player.position.y > 200.0 {
+            backgroundNode.position = CGPoint(x: 0.0, y: -((player.position.y - 200.0)))
+            foregroundNode.position = CGPoint(x: 0.0, y: -(player.position.y - 200.0))
+        }
         
     }
     
@@ -125,6 +146,13 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
         
         // Update the HUD if necessary
         if updateHUD {
+            
+            let num_foods = foods.count + 1
+            foods.append(createFoodAtPosition(CGPoint(x: 160, y: 220 * num_foods)))
+            foregroundNode.addChild(foods[num_foods - 1])
+            
+            score = score + 1
+            scoreNode.text = "\(score)"
             
         }
         
@@ -182,7 +210,7 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
         let node = FoodNode()
         let thePosition = CGPoint(x: position.x * scaleFactor, y: position.y)
         node.position = thePosition
-        node.name = "NODE_STAR"
+        node.name = "NODE_FOOD"
     
         var sprite: SKSpriteNode
         sprite = SKSpriteNode(imageNamed: "Star")
