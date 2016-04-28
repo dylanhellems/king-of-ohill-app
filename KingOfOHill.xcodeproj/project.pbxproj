@@ -21,7 +21,6 @@
 		162D83501CB09C7D00D61913 /* RestApiManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162D834F1CB09C7D00D61913 /* RestApiManager.swift */; };
 		162D83511CB09C7D00D61913 /* RestApiManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162D834F1CB09C7D00D61913 /* RestApiManager.swift */; };
 		D91252271CD0400C00A7F28C /* Assets.atlas in Resources */ = {isa = PBXBuildFile; fileRef = D91252251CD0400C00A7F28C /* Assets.atlas */; };
-		D91252281CD0400C00A7F28C /* Backgrounds in Resources */ = {isa = PBXBuildFile; fileRef = D91252261CD0400C00A7F28C /* Backgrounds */; };
 		D912522A1CD047CB00A7F28C /* GameObjectNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91252291CD047CB00A7F28C /* GameObjectNode.swift */; };
 		D9CD9C661CC599EE002269A0 /* LeaderboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CD9C651CC599EE002269A0 /* LeaderboardViewController.swift */; };
 /* End PBXBuildFile section */
@@ -268,7 +267,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D91252281CD0400C00A7F28C /* Backgrounds in Resources */,
 				162D83161CB0905600D61913 /* GameScene.sks in Resources */,
 				162D83221CB0905600D61913 /* LaunchScreen.storyboard in Resources */,
 				162D831F1CB0905600D61913 /* Assets.xcassets in Resources */,

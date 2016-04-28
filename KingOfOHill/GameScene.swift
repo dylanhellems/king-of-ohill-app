@@ -14,7 +14,6 @@ import CoreMotion
 class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
     
     // Layered Nodes
-    var backgroundNode: SKNode!
     var foregroundNode: SKNode!
     var hudNode: SKNode!
     
@@ -58,9 +57,6 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("pauseGameScene"), name: "PauseGameScene", object: nil)
         
         // Create the game nodes
-        backgroundNode = createBackgroundNode()
-        self.addChild(backgroundNode)
-        
         foregroundNode = SKNode()
         foregroundNode.zPosition = 1
         self.addChild(foregroundNode)
@@ -169,15 +165,7 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
             
             // Calculate player y offset
             if player.position.y > 200.0 && player.position.y >= maxHeight {
-                backgroundNode.position = CGPoint(x: 0.0, y: -((player.position.y - 200.0)))
                 foregroundNode.position = CGPoint(x: 0.0, y: -(player.position.y - 200.0))
-            }
-            
-            if player.position.y > nextHeight {
-                print("true")
-                nextHeight = nextHeight + heightConstant
-                let newBG = createBackgroundNode()
-                backgroundNode.addChild(newBG)
             }
             
             if player.position.y < maxHeight - 500 {
@@ -235,31 +223,6 @@ class GameScene: SKScene, CLLocationManagerDelegate, SKPhysicsContactDelegate {
             scoreNode.text = "\(score)"
             
         }
-        
-    }
-    
-    func createBackgroundNode() -> SKNode {
-        
-        // Create the node
-        let backgroundNode = SKNode()
-        let ySpacing = 64 * scaleFactor
-        
-        // Go through images until the entire background is built
-        for index in 0...19 {
-
-            let node = SKSpriteNode(imageNamed:String(format: "Background%02d", index + 1))
-
-            node.setScale(scaleFactor)
-            node.anchorPoint = CGPoint(x: 0.5, y: 0.0)
-            node.position = CGPoint(x: self.size.width / 2, y: ySpacing * CGFloat(lastIndex))
-
-            backgroundNode.addChild(node)
-            
-            lastIndex = lastIndex + 1
-        }
-        
-        // Return the completed background node
-        return backgroundNode
         
     }
     
